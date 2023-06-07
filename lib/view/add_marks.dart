@@ -28,13 +28,18 @@ class _AddMarkState extends ConsumerState<AddMark> {
 
     final totalMarks = data.marksheets
         .fold(0, (sum, markSheet) => sum + (markSheet.mark ?? 0));
-    final result = totalMarks >= 40 ? 'Pass' : 'Fail';
+    final result = data.marksheets
+            .any((markSheet) => markSheet.mark != null && markSheet.mark! < 40)
+        ? 'Fail'
+        : 'Pass';
+
     String division;
-    if (totalMarks >= 60) {
+    final totalPercentage = (totalMarks / data.marksheets.length) ;
+    if (totalPercentage >= 60) {
       division = 'First Division';
-    } else if (totalMarks >= 50) {
+    } else if (totalPercentage >= 50) {
       division = 'Second Division';
-    } else if (totalMarks >= 40) {
+    } else if (totalPercentage >= 40) {
       division = 'Third Division';
     } else {
       division = "Fail";
@@ -137,8 +142,8 @@ class _AddMarkState extends ConsumerState<AddMark> {
           ),
           data.marksheets.isNotEmpty
               ? Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
+                  child: SingleChildScrollView(
+                    child: Column(
                       children: [
                         FittedBox(
                           child: DataTable(
@@ -188,8 +193,8 @@ class _AddMarkState extends ConsumerState<AddMark> {
                         ),
                       ],
                     ),
-                ),
-              )
+                  ),
+                )
               : const Text("No Data"),
         ],
       ),
